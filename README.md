@@ -1,5 +1,5 @@
 # ToListen
-![Icon](https://github.com/DuckCoder1101/ToListen/blob/main/public/icons/icon.png?raw=true)
+<img src="https://github.com/DuckCoder1101/ToListen/blob/main/public/icons/icon.png?raw=true" width="350" height="350" alt="icon">
 
 ToListen is a **FREE and OPEN SOURCE** musics player. 
 With ToListen you can organize your musics in just one library and enjoy listening your musics while you do other things in your PC.
