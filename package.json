@@ -1,12 +1,13 @@
 {
   "name": "tolisten",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "A free and open source music player to you!",
   "main": "build/index.js",
   "scripts": {
     "build": "rmdir /s /q build && tsc --project src/tsconfig.json",
     "build-dev": "npm run build && npx electron build/index.js",
-    "dev": "npx electron build/index.js"
+    "dev": "npx electron build/index.js",
+    "dist": "npm run build && node builder/build.js"
   },
   "author": "DuckCoder1101",
   "license": "MIT",
