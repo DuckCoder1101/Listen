@@ -5,27 +5,28 @@ import { join } from "path";
 
 import { Music } from "./types";
 
-const path = join(app.getPath("appData"), "/ToListen/database.json");
-console.log(path);
+const appDataPath = join(app.getPath("appData"), "/ToListen");
+const databasePath = join(appDataPath, "/database.json");
+const libraryPath = join(appDataPath, "/library");
 
 export async function ReadDatabase(): Promise<Music[]> {
     try {
-        if (existsSync(path)) {
-            const rawFile = readFileSync(path, { encoding: "utf-8" });
-            const json = await JSON.parse(rawFile);
+        if (!existsSync(databasePath)) {
+            if (!existsSync(appDataPath)) {
+                mkdirSync(appDataPath);
+            }
 
-            return json.data;
+            writeFileSync(databasePath, JSON.stringify({ data: [] }), { encoding: "utf-8" });
         }
 
-        mkdirSync(join(app.getPath("appData"), "ToListen"));
-        mkdirSync(join(app.getPath("appData"), "ToListen/library"));
+        if (!existsSync(libraryPath)) {
+            mkdirSync(libraryPath);
+        }
+        
+        const rawFile = readFileSync(databasePath, { encoding: "utf-8" });
+        const json = await JSON.parse(rawFile);
 
-        writeFileSync(path, 
-            JSON.stringify({ data: [] }),
-            { encoding: "utf-8" }
-        );
-
-        return [];
+        return json.data;
     } catch (err) {
         if (isDev) console.log(err);
         return [];
@@ -35,7 +36,7 @@ export async function ReadDatabase(): Promise<Music[]> {
 export function UpdateDatabase(data: Music[]): boolean {
     try {
         const json = JSON.stringify({ data });
-        writeFileSync(path, json, {
+        writeFileSync(databasePath, json, {
             encoding: "utf-8"
         });
 
