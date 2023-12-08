@@ -32,6 +32,7 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
         width: 500, height: 400,
         center: true, modal: true, alwaysOnTop: true,
         autoHideMenuBar: true, resizable: false, minimizable: false,
+        icon: (0, path_1.join)(__dirname, "../public/icons/icon.png"),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -72,10 +73,11 @@ function StartEvents(mainWindow) {
         const paths = electron_1.dialog.showOpenDialogSync(mainWindow, {
             title: "Adicionar músicas",
             defaultPath: electron_1.app.getPath("music"),
+            properties: ["multiSelections"],
             filters: [
                 {
                     name: "Music files",
-                    extensions: ["mp3", "mov"]
+                    extensions: ["mp3", "wav", "ogg"]
                 }
             ]
         });

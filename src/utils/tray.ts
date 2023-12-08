@@ -2,7 +2,7 @@ import { app, BrowserWindow, Menu, Tray } from "electron";
 import { join } from "path";
 
 export default function CreateTray(mainWindow: BrowserWindow) {
-    const tray = new Tray(join(__dirname, "../../public/icons/tray.png"));
+    const tray = new Tray(join(__dirname, "../../public/icons/icon.png"));
     tray.setContextMenu(Menu.buildFromTemplate([
         {
             label: "Abrir",

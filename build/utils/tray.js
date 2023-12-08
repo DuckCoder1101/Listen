@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path_1 = require("path");
 function CreateTray(mainWindow) {
-    const tray = new electron_1.Tray((0, path_1.join)(__dirname, "../../public/icons/tray.png"));
+    const tray = new electron_1.Tray((0, path_1.join)(__dirname, "../../public/icons/icon.png"));
     tray.setContextMenu(electron_1.Menu.buildFromTemplate([
         {
             label: "Abrir",

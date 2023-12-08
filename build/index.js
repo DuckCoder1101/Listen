@@ -19,15 +19,19 @@ const path_1 = require("path");
 const database_1 = require("./utils/database");
 const tray_1 = __importDefault(require("./utils/tray"));
 const ipcMainEvents_1 = __importDefault(require("./utils/ipcMainEvents"));
+const updater_1 = __importDefault(require("./utils/updater"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         electron_1.app.setName("ToListen");
         electron_1.app.setAppUserModelId("ToListen");
+        if (!electron_is_dev_1.default)
+            (0, updater_1.default)();
         const mainWindow = new electron_1.BrowserWindow({
             title: electron_1.app.getName(),
             center: true,
             opacity: 0,
             autoHideMenuBar: true,
+            icon: (0, path_1.join)(__dirname, "../public/icons/icon.png"),
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,

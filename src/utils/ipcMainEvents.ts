@@ -23,6 +23,7 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
         width: 500, height: 400,
         center: true, modal: true, alwaysOnTop: true,
         autoHideMenuBar: true, resizable: false, minimizable: false,
+        icon: join(__dirname, "../public/icons/icon.png"),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -67,10 +68,11 @@ export default function StartEvents(mainWindow: BrowserWindow) {
         const paths = dialog.showOpenDialogSync(mainWindow, {
             title: "Adicionar músicas",
             defaultPath: app.getPath("music"),
+            properties: [ "multiSelections" ],
             filters: [
                 { 
                     name: "Music files", 
-                    extensions: [ "mp3", "mov" ]
+                    extensions: [ "mp3", "wav", "ogg" ]
                 }
             ]
         });

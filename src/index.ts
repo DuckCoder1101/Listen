@@ -6,16 +6,20 @@ import { join } from "path";
 import { ReadDatabase, UpdateDatabase } from "./utils/database";
 import CreateTray from "./utils/tray";
 import StartEvents from "./utils/ipcMainEvents";
+import CheckForUpdates from "./utils/updater";
 
 async function main() {
     app.setName("ToListen");
     app.setAppUserModelId("ToListen");
+
+    if (!isDev) CheckForUpdates();
 
     const mainWindow = new BrowserWindow({
         title: app.getName(),
         center: true,
         opacity: 0,
         autoHideMenuBar: true,
+        icon: join(__dirname, "../public/icons/icon.png"),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
