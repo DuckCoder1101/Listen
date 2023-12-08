@@ -1,7 +1,8 @@
 import { app, BrowserWindow, dialog, Notification } from "electron";
-import isDev from "electron-is-dev";
 import { existsSync } from "fs";
 import { join } from "path";
+import isDev from "electron-is-dev";
+import log from "electron-log";
 
 import { ReadDatabase, UpdateDatabase } from "./utils/database";
 import CreateTray from "./utils/tray";
@@ -12,7 +13,7 @@ async function main() {
     app.setName("ToListen");
     app.setAppUserModelId("ToListen");
 
-    if (!isDev) CheckForUpdates();
+    log.initialize({ preload: false });
 
     const mainWindow = new BrowserWindow({
         title: app.getName(),
@@ -51,21 +52,23 @@ async function main() {
     CreateTray(mainWindow);
     StartEvents(mainWindow);
 
-    if (isDev) {
-        mainWindow.webContents.openDevTools();
-    }
-
     mainWindow.on("close", (ev) => {
         ev.preventDefault();
         mainWindow.hide();
 
         new Notification({
-            title: `${app.getName()} ainda está em execução!`,
+            title: `ToListen ainda está em execução!`,
             body: "🎵 Tocando em 2° plano",
             silent: true,
             urgency: "low"
         }).show();
     });
+
+    if (isDev) {
+        mainWindow.webContents.openDevTools();
+    } else {
+        CheckForUpdates(mainWindow);
+    }
 }
 
 app.on("ready", () => main());

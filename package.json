@@ -7,7 +7,7 @@
     "build": "rmdir /s /q build && tsc --project src/tsconfig.json",
     "build-dev": "npm run build && npx electron build/index.js",
     "dev": "npx electron build/index.js",
-    "dist": "npm run build && node builder/build.js"
+    "dist": "npm run build && rmdir /s /q dist && node builder/build.js"
   },
   "author": "DuckCoder1101",
   "license": "MIT",

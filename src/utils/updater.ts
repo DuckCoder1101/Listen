@@ -1,20 +1,33 @@
+import { BrowserWindow, Notification } from "electron";
 import { autoUpdater } from "electron-updater";
-import electronLog from "electron-log";
+import log from "electron-log";
 
-export default function CheckForUpdates() {
-    electronLog.transports.file.level = "debug";
-    autoUpdater.logger = electronLog;
-
+export default async function checkForUpdates(mainWindow: BrowserWindow) {
     autoUpdater.autoDownload = true;
-    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.allowDowngrade = true;
     autoUpdater.autoRunAppAfterInstall = true;
 
-    autoUpdater.checkForUpdatesAndNotify({
-        title: "Atualização do ToListen!",
-        body: "O ToListen irá reiniciar para atualização em breve!."
+    log.transports.file.level = "debug";
+    autoUpdater.logger = log;
+
+    await autoUpdater.checkForUpdates();
+
+    autoUpdater.on("update-available", (info) => {
+        new Notification({
+            title: `ToListen está atualizando!`,
+            body: `O programa será reiniciado em breve para aplicação da versão ${info.version}.`,
+            silent: false,
+            urgency: "normal"
+        }).show();
+    });
+
+    autoUpdater.on("download-progress", (info) => {
+        mainWindow.setProgressBar(info.percent, {
+            mode: "indeterminate"
+        });
     });
 
     autoUpdater.on("update-downloaded", () => {
-        autoUpdater.quitAndInstall(true);
+        autoUpdater.quitAndInstall(true, true);
     });
 }

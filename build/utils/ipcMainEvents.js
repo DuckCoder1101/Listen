@@ -17,6 +17,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const database_1 = require("./database");
 const downloader_1 = __importDefault(require("./downloader"));
+const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 const isValidUrl = (urlString) => {
     var urlPattern = new RegExp('^(https?:\\/\\/)?' +
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
@@ -57,11 +58,13 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
 });
 function StartEvents(mainWindow) {
     electron_1.ipcMain.on("add-music-from-url", (ev, url) => {
-        return electron_1.dialog.showMessageBoxSync(mainWindow, {
-            title: "Função não disponível",
-            message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
-            type: "info"
-        });
+        if (!electron_is_dev_1.default) {
+            return electron_1.dialog.showMessageBoxSync(mainWindow, {
+                title: "Função não disponível",
+                message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
+                type: "info"
+            });
+        }
         if (!url || !isValidUrl(url)) {
             electron_1.dialog.showMessageBoxSync(mainWindow, {
                 title: "URL inválido",

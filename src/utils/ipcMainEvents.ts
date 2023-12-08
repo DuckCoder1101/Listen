@@ -5,6 +5,7 @@ import { join, extname } from "path";
 import { ModalCreateMusicResponse, Music } from "./types";
 import { ReadDatabase, UpdateDatabase } from "./database";
 import Download from "./downloader";
+import isDev from "electron-is-dev";
 
 const isValidUrl = (urlString: string) => {
     var urlPattern = new RegExp('^(https?:\\/\\/)?' +
@@ -52,11 +53,13 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
 
 export default function StartEvents(mainWindow: BrowserWindow) {
     ipcMain.on("add-music-from-url", (ev, url: string) => {
-        return dialog.showMessageBoxSync(mainWindow, {
-            title: "Função não disponível",
-            message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
-            type: "info"
-        });
+        if (!isDev) {
+            return dialog.showMessageBoxSync(mainWindow, {
+                title: "Função não disponível",
+                message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
+                type: "info"
+            });
+        }
 
         if (!url || !isValidUrl(url)) {
             dialog.showMessageBoxSync(mainWindow, {
