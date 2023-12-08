@@ -57,6 +57,11 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
 });
 function StartEvents(mainWindow) {
     electron_1.ipcMain.on("add-music-from-url", (ev, url) => {
+        return electron_1.dialog.showMessageBoxSync(mainWindow, {
+            title: "Função não disponível",
+            message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
+            type: "info"
+        });
         if (!url || !isValidUrl(url)) {
             electron_1.dialog.showMessageBoxSync(mainWindow, {
                 title: "URL inválido",

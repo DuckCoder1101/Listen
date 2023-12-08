@@ -52,6 +52,12 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
 
 export default function StartEvents(mainWindow: BrowserWindow) {
     ipcMain.on("add-music-from-url", (ev, url: string) => {
+        return dialog.showMessageBoxSync(mainWindow, {
+            title: "Função não disponível",
+            message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
+            type: "info"
+        });
+
         if (!url || !isValidUrl(url)) {
             dialog.showMessageBoxSync(mainWindow, {
                 title: "URL inválido",
