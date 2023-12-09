@@ -22,19 +22,22 @@ function CheckForUpdates(mainWindow) {
         electron_updater_1.autoUpdater.autoRunAppAfterInstall = true;
         electron_log_1.default.transports.file.level = "debug";
         electron_updater_1.autoUpdater.logger = electron_log_1.default;
-        const result = yield electron_updater_1.autoUpdater.checkForUpdates();
-        if (result != null) {
+        electron_updater_1.autoUpdater.checkForUpdates();
+        electron_updater_1.autoUpdater.on("update-available", (info) => {
             new electron_1.Notification({
                 title: `ToListen está atualizando!`,
-                body: `O programa será reiniciado em breve para aplicação da versão ${result.updateInfo.version}.`,
+                body: `O programa será reiniciado em breve para aplicação da versão ${info.version}.`,
                 silent: false,
                 urgency: "normal"
             }).show();
-            yield new Promise(resolve => {
-                electron_updater_1.autoUpdater.on("update-downloaded", resolve);
+        });
+        yield new Promise(resolve => {
+            electron_updater_1.autoUpdater.on("update-not-available", resolve);
+            electron_updater_1.autoUpdater.on("update-downloaded", (ev) => {
+                electron_updater_1.autoUpdater.quitAndInstall(true, true);
+                resolve(null);
             });
-            electron_updater_1.autoUpdater.quitAndInstall(true, true);
-        }
+        });
     });
 }
 exports.default = CheckForUpdates;

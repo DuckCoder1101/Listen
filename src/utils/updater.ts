@@ -10,19 +10,22 @@ export default async function CheckForUpdates(mainWindow: BrowserWindow) {
     log.transports.file.level = "debug";
     autoUpdater.logger = log;
 
-    const result = await autoUpdater.checkForUpdates();
-    if (result != null) {
+    autoUpdater.checkForUpdates();
+
+    autoUpdater.on("update-available", (info) => {
         new Notification({
             title: `ToListen está atualizando!`,
-            body: `O programa será reiniciado em breve para aplicação da versão ${result.updateInfo.version}.`,
+            body: `O programa será reiniciado em breve para aplicação da versão ${info.version}.`,
             silent: false,
             urgency: "normal"
         }).show();
+    });
 
-        await new Promise(resolve => {
-            autoUpdater.on("update-downloaded", resolve);
+    await new Promise(resolve => {
+        autoUpdater.on("update-not-available", resolve);
+        autoUpdater.on("update-downloaded", (ev) => {
+            autoUpdater.quitAndInstall(true, true);
+            resolve(null);
         });
-
-        autoUpdater.quitAndInstall(true, true);
-    }
+    });
 }
