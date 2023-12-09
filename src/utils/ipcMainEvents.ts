@@ -53,14 +53,6 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
 
 export default function StartEvents(mainWindow: BrowserWindow) {
     ipcMain.on("add-music-from-url", (ev, url: string) => {
-        if (!isDev) {
-            return dialog.showMessageBoxSync(mainWindow, {
-                title: "Função não disponível",
-                message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
-                type: "info"
-            });
-        }
-
         if (!url || !isValidUrl(url)) {
             dialog.showMessageBoxSync(mainWindow, {
                 title: "URL inválido",
@@ -68,7 +60,6 @@ export default function StartEvents(mainWindow: BrowserWindow) {
                 type: "error"
             });
         } else {
-            url = url.replace("https://", "http://");
             CreateModal([ { id: -1, name: "", author: "", path: url } ], true);
         }
     });
@@ -101,19 +92,25 @@ export default function StartEvents(mainWindow: BrowserWindow) {
 
     ipcMain.on("(modal)-create-musics", async (ev, info: ModalCreateMusicResponse) => {
         const databaseMusics = await ReadDatabase();
-        let allMusics = [...databaseMusics, ...info.musics];
+        let allMusics = databaseMusics;
 
-        info.musics.forEach((music) => music.id = allMusics.indexOf(music));
+        info.musics.forEach((music) => {
+            music.name = music.name.replace(/["']/g, "");
+            music.author = music.author.replace(/["']/g, "");
+
+            if (!allMusics.find((other) => other.name == music.name && other.path == music.path)) {
+                music.id = allMusics.length;
+                allMusics.push(music);
+            }
+        });
 
         if (info.isFromDownload) {
             const url = info.musics[0].path;
-            const path = await Download(info.musics[0], url);
+            const path = await Download(info.musics[0], url, mainWindow);
 
-            if (path != null) {
-                (allMusics.find(music => music == info.musics[0]) as Music).path = path;
-            } else {
-                allMusics = allMusics.filter(music => music != info.musics[0]);
-            }
+            if (!path) return ev.sender.close();
+
+            (allMusics.find(music => music == info.musics[0]) as Music).path = path;
         }
 
         UpdateDatabase(allMusics);
@@ -124,6 +121,9 @@ export default function StartEvents(mainWindow: BrowserWindow) {
 
     ipcMain.on("(modal)-alter-music", async (ev, { id, name, author, path }: Music) => {
         let allMusics = await ReadDatabase();
+
+        name = name.replace(/["']/g, "");
+        author = author.replace(/["']/g, "");
 
         if (allMusics[id] != undefined) {
             allMusics[id] = { id, name, author, path };

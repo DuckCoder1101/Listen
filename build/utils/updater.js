@@ -15,30 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const electron_updater_1 = require("electron-updater");
 const electron_log_1 = __importDefault(require("electron-log"));
-function checkForUpdates(mainWindow) {
+function CheckForUpdates(mainWindow) {
     return __awaiter(this, void 0, void 0, function* () {
         electron_updater_1.autoUpdater.autoDownload = true;
         electron_updater_1.autoUpdater.allowDowngrade = true;
         electron_updater_1.autoUpdater.autoRunAppAfterInstall = true;
         electron_log_1.default.transports.file.level = "debug";
         electron_updater_1.autoUpdater.logger = electron_log_1.default;
-        yield electron_updater_1.autoUpdater.checkForUpdates();
-        electron_updater_1.autoUpdater.on("update-available", (info) => {
+        const result = yield electron_updater_1.autoUpdater.checkForUpdates();
+        if (result != null) {
             new electron_1.Notification({
                 title: `ToListen está atualizando!`,
-                body: `O programa será reiniciado em breve para aplicação da versão ${info.version}.`,
+                body: `O programa será reiniciado em breve para aplicação da versão ${result.updateInfo.version}.`,
                 silent: false,
                 urgency: "normal"
             }).show();
-        });
-        electron_updater_1.autoUpdater.on("download-progress", (info) => {
-            mainWindow.setProgressBar(info.percent, {
-                mode: "indeterminate"
+            yield new Promise(resolve => {
+                electron_updater_1.autoUpdater.on("update-downloaded", resolve);
             });
-        });
-        electron_updater_1.autoUpdater.on("update-downloaded", () => {
             electron_updater_1.autoUpdater.quitAndInstall(true, true);
-        });
+        }
     });
 }
-exports.default = checkForUpdates;
+exports.default = CheckForUpdates;

@@ -2,7 +2,7 @@ import { BrowserWindow, Notification } from "electron";
 import { autoUpdater } from "electron-updater";
 import log from "electron-log";
 
-export default async function checkForUpdates(mainWindow: BrowserWindow) {
+export default async function CheckForUpdates(mainWindow: BrowserWindow) {
     autoUpdater.autoDownload = true;
     autoUpdater.allowDowngrade = true;
     autoUpdater.autoRunAppAfterInstall = true;
@@ -10,24 +10,19 @@ export default async function checkForUpdates(mainWindow: BrowserWindow) {
     log.transports.file.level = "debug";
     autoUpdater.logger = log;
 
-    await autoUpdater.checkForUpdates();
-
-    autoUpdater.on("update-available", (info) => {
+    const result = await autoUpdater.checkForUpdates();
+    if (result != null) {
         new Notification({
             title: `ToListen está atualizando!`,
-            body: `O programa será reiniciado em breve para aplicação da versão ${info.version}.`,
+            body: `O programa será reiniciado em breve para aplicação da versão ${result.updateInfo.version}.`,
             silent: false,
             urgency: "normal"
         }).show();
-    });
 
-    autoUpdater.on("download-progress", (info) => {
-        mainWindow.setProgressBar(info.percent, {
-            mode: "indeterminate"
+        await new Promise(resolve => {
+            autoUpdater.on("update-downloaded", resolve);
         });
-    });
 
-    autoUpdater.on("update-downloaded", () => {
         autoUpdater.quitAndInstall(true, true);
-    });
+    }
 }

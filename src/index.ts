@@ -1,13 +1,13 @@
 import { app, BrowserWindow, dialog, Notification } from "electron";
-import { existsSync } from "fs";
-import { join } from "path";
 import isDev from "electron-is-dev";
+import { existsSync } from "fs";
 import log from "electron-log";
+import { join } from "path";
 
 import { ReadDatabase, UpdateDatabase } from "./utils/database";
-import CreateTray from "./utils/tray";
 import StartEvents from "./utils/ipcMainEvents";
 import CheckForUpdates from "./utils/updater";
+import CreateTray from "./utils/tray";
 
 async function main() {
     app.setName("ToListen");

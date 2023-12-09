@@ -1,6 +1,6 @@
 {
   "name": "tolisten",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A free and open source music player to you!",
   "main": "build/index.js",
   "scripts": {
@@ -14,7 +14,9 @@
   "dependencies": {
     "electron-is-dev": "^2.0.0",
     "electron-log": "^5.0.1",
-    "electron-updater": "^6.1.7"
+    "electron-updater": "^6.1.7",
+    "node-downloader-helper": "^2.1.9",
+    "uninstall": "^0.0.0"
   },
   "repository": {
     "url": "https://github.com/DuckCoder1101/ToListen",

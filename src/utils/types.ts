@@ -1,7 +1,7 @@
 export type Music = {
     id: number;
     name: string;
-    author?: string;
+    author: string;
     path: string;
 };
 

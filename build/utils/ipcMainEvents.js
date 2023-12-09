@@ -17,7 +17,6 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const database_1 = require("./database");
 const downloader_1 = __importDefault(require("./downloader"));
-const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 const isValidUrl = (urlString) => {
     var urlPattern = new RegExp('^(https?:\\/\\/)?' +
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
@@ -58,13 +57,6 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
 });
 function StartEvents(mainWindow) {
     electron_1.ipcMain.on("add-music-from-url", (ev, url) => {
-        if (!electron_is_dev_1.default) {
-            return electron_1.dialog.showMessageBoxSync(mainWindow, {
-                title: "Função não disponível",
-                message: "Esta função ainda não chegou ao programa, em breve ela estará disponível!",
-                type: "info"
-            });
-        }
         if (!url || !isValidUrl(url)) {
             electron_1.dialog.showMessageBoxSync(mainWindow, {
                 title: "URL inválido",
@@ -73,7 +65,6 @@ function StartEvents(mainWindow) {
             });
         }
         else {
-            url = url.replace("https://", "http://");
             CreateModal([{ id: -1, name: "", author: "", path: url }], true);
         }
     });
@@ -102,17 +93,21 @@ function StartEvents(mainWindow) {
     }));
     electron_1.ipcMain.on("(modal)-create-musics", (ev, info) => __awaiter(this, void 0, void 0, function* () {
         const databaseMusics = yield (0, database_1.ReadDatabase)();
-        let allMusics = [...databaseMusics, ...info.musics];
-        info.musics.forEach((music) => music.id = allMusics.indexOf(music));
+        let allMusics = databaseMusics;
+        info.musics.forEach((music) => {
+            music.name = music.name.replace(/["']/g, "");
+            music.author = music.author.replace(/["']/g, "");
+            if (!allMusics.find((other) => other.name == music.name && other.path == music.path)) {
+                music.id = allMusics.length;
+                allMusics.push(music);
+            }
+        });
         if (info.isFromDownload) {
             const url = info.musics[0].path;
-            const path = yield (0, downloader_1.default)(info.musics[0], url);
-            if (path != null) {
-                allMusics.find(music => music == info.musics[0]).path = path;
-            }
-            else {
-                allMusics = allMusics.filter(music => music != info.musics[0]);
-            }
+            const path = yield (0, downloader_1.default)(info.musics[0], url, mainWindow);
+            if (!path)
+                return ev.sender.close();
+            allMusics.find(music => music == info.musics[0]).path = path;
         }
         (0, database_1.UpdateDatabase)(allMusics);
         ev.sender.close();
@@ -120,6 +115,8 @@ function StartEvents(mainWindow) {
     }));
     electron_1.ipcMain.on("(modal)-alter-music", (ev, { id, name, author, path }) => __awaiter(this, void 0, void 0, function* () {
         let allMusics = yield (0, database_1.ReadDatabase)();
+        name = name.replace(/["']/g, "");
+        author = author.replace(/["']/g, "");
         if (allMusics[id] != undefined) {
             allMusics[id] = { id, name, author, path };
         }

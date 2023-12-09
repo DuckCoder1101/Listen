@@ -13,14 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
-const fs_1 = require("fs");
-const path_1 = require("path");
 const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
+const fs_1 = require("fs");
 const electron_log_1 = __importDefault(require("electron-log"));
+const path_1 = require("path");
 const database_1 = require("./utils/database");
-const tray_1 = __importDefault(require("./utils/tray"));
 const ipcMainEvents_1 = __importDefault(require("./utils/ipcMainEvents"));
 const updater_1 = __importDefault(require("./utils/updater"));
+const tray_1 = __importDefault(require("./utils/tray"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         electron_1.app.setName("ToListen");

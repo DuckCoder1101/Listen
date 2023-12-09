@@ -30,8 +30,9 @@ function CreateTray(mainWindow) {
             label: "Fechar",
             type: "normal",
             click: () => {
+                mainWindow.removeAllListeners("close");
                 if (process.platform != "darwin") {
-                    electron_1.app.exit(0);
+                    electron_1.app.quit();
                 }
             }
         }

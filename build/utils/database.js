@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateDatabase = exports.ReadDatabase = void 0;
 const electron_1 = require("electron");
-const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 const fs_1 = require("fs");
+const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 const path_1 = require("path");
 const appDataPath = (0, path_1.join)(electron_1.app.getPath("appData"), "/ToListen");
 const databasePath = (0, path_1.join)(appDataPath, "/database.json");

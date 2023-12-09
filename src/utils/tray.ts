@@ -29,8 +29,9 @@ export default function CreateTray(mainWindow: BrowserWindow) {
             label: "Fechar",
             type: "normal",
             click: () => {
+                mainWindow.removeAllListeners("close");
                 if (process.platform != "darwin") {
-                    app.exit(0);
+                    app.quit();
                 }
             }
         }

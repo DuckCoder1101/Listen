@@ -1,6 +1,6 @@
 import { app } from "electron";
-import isDev from "electron-is-dev";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
+import isDev from "electron-is-dev";
 import { join } from "path";
 
 import { Music } from "./types";
