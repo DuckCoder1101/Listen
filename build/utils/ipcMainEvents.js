@@ -33,6 +33,7 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
         center: true, modal: true, alwaysOnTop: true,
         autoHideMenuBar: true, resizable: false, minimizable: false,
         icon: (0, path_1.join)(__dirname, "../public/icons/icon.png"),
+        maximizable: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -51,7 +52,8 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
             buttons: ["Ok", "Cancelar"],
         });
         if (res == 0) {
-            modalWindow.destroy();
+            modalWindow.removeAllListeners("close");
+            modalWindow.close();
         }
     });
 });
@@ -158,5 +160,11 @@ function StartEvents(mainWindow) {
             (0, fs_1.unlinkSync)(targetMusic.path);
         }
     }));
+    electron_1.ipcMain.on("show-dialog", (ev, { type, message }) => {
+        electron_1.dialog.showMessageBoxSync(electron_1.BrowserWindow.getFocusedWindow() || mainWindow, {
+            type,
+            message
+        });
+    });
 }
 exports.default = StartEvents;

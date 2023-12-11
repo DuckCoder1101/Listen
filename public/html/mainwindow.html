@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player de música</title>
+    <title>ToListen</title>
 
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -39,14 +39,22 @@
                 <img id="playing-music-image" class='mx-2 img-fluid rounded-circle bg-secondary' width="45px" height="45px" style="max-width: 50%;" />
                 <span id="playing-music-name" class="fw-bold text-light flex-fill text-start">Sem música</span>
 
-                <form class="d-flex flex-column justify-content-center">
-                    <div class="d-inline">
-                        <span class="badge d-inline "><i id="volume-icon" class='bx bx-volume-full'></i></span>
-                        <input id="volume-input" class="d-inline" type="range" min="0" max="1" step=".05" value="1" name="volume" />
+                <form class="d-flex align-items-center flex-wrap" onsubmit="return false">
+                    <div class="d-flex flex-column justify-content-center">
+                        <div>
+                            <span class="badge d-inline "><i id="volume-icon" class='bx bx-volume-full'></i></span>
+                            <input id="volume-input" class="d-inline" type="range" min="0" max="1" step=".05" value="1" name="volume" />
+                        </div>
+                        <div>
+                            <span class="badge d-inline"><i class='bx bx-time' ></i></span>
+                            <input id="time-input" class="d-inline" type="range" min="0" max="0" step="1" value="0" name="time" disabled />
+                        </div>
                     </div>
+
                     <div>
-                        <span class="badge d-inline"><i class='bx bx-time' ></i></span>
-                        <input id="time-input" class="d-inline" type="range" min="0" max="0" step="1" value="0" name="time" disabled />
+                        <button type="button" id="music-loop" class="badge bg-transparent rounded-circle border-0">
+                            <i class='bx bx-repost'></i>
+                        </button>
                     </div>
                 </form>
             </div>

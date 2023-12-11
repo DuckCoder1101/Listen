@@ -5,7 +5,6 @@ import { join, extname } from "path";
 import { ModalCreateMusicResponse, Music } from "./types";
 import { ReadDatabase, UpdateDatabase } from "./database";
 import Download from "./downloader";
-import isDev from "electron-is-dev";
 
 const isValidUrl = (urlString: string) => {
     var urlPattern = new RegExp('^(https?:\\/\\/)?' +
@@ -25,6 +24,7 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
         center: true, modal: true, alwaysOnTop: true,
         autoHideMenuBar: true, resizable: false, minimizable: false,
         icon: join(__dirname, "../public/icons/icon.png"),
+        maximizable: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -46,7 +46,8 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
         });
 
         if (res == 0) {
-            modalWindow.destroy();
+            modalWindow.removeAllListeners("close");
+            modalWindow.close();
         }
     });
 };
@@ -178,5 +179,12 @@ export default function StartEvents(mainWindow: BrowserWindow) {
         if (targetMusic.path.startsWith(path)) {
             unlinkSync(targetMusic.path);
         }
+    });
+
+    ipcMain.on("show-dialog", (ev, { type, message }) => {
+        dialog.showMessageBoxSync(BrowserWindow.getFocusedWindow() || mainWindow, {
+            type,
+            message
+        });
     });
 }

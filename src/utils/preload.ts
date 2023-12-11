@@ -9,14 +9,18 @@ const sendChanels: string[] = [
     "(modal)-alter-music",
     "backup",
     "delete-music",
-    "alter-music"
+    "alter-music",
+    "show-dialog"
 ];
 
 const receiveChannels: string[] = [
     "add-music-error",
     "update-musics-list",
     "(modal)-musics",
-    "pause-music"
+    "pause-music",
+    "play-library",
+    "restart-music",
+    "set-music-loop"
 ];
 
 contextBridge.exposeInMainWorld("api", {
@@ -31,4 +35,4 @@ contextBridge.exposeInMainWorld("api", {
             ipcRenderer.on(channel, callback);
         }
     }
-})
+});
