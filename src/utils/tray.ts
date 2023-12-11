@@ -17,11 +17,32 @@ export default function CreateTray(mainWindow: BrowserWindow) {
             type: "submenu",
             submenu: [
                 {
+                    label: "Tocar biblíoteca",
+                    type: "normal",
+                    click() {
+                        mainWindow.webContents.send("play-library")
+                    }
+                },
+                {
                     label: "Pausar música",
                     type: "normal",
-                    click: () => {
+                    click() {
                         mainWindow.webContents.send("pause-music")
                     }
+                },
+                {
+                    label: "Reiniar música",
+                    type: "normal",
+                    click() {
+                        mainWindow.webContents.send("restart-music")
+                    }
+                },
+                {
+                    label: "Loop",
+                    type: "checkbox",
+                    click(menuItem) {
+                        mainWindow.webContents.send("set-music-loop", menuItem.checked)
+                    },
                 }
             ]
         },

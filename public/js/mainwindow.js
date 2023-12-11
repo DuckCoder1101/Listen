@@ -2,6 +2,7 @@ var musics = [];
 var menuMusicId = null;
 var playingMusicId = null;
 var isUserChangingTime = false;
+var isInLoop = false;
 
 const PlayButtonClicked = (ev) => {
     const musicId = ev.currentTarget.getAttribute("data-music-id");
@@ -16,8 +17,8 @@ const PlayMusic = async (musicId) => {
     const volumeInput = document.querySelector("#volume-input");
     const timeInput = document.querySelector("#time-input");
 
-    const music = await musics.find(ms => ms.id == musicId);
-    const indexOfMusic = musics.indexOf(music);
+    const music = await musics[musicId];
+    if (!music) return;
 
     if (playingMusicId != null) {
         const oldMusicBtn = document.querySelector(`[data-music-id="${playingMusicId}"]`);
@@ -36,8 +37,13 @@ const PlayMusic = async (musicId) => {
         await audio.play();
     
         audio.addEventListener("ended", () => {
-            const index = indexOfMusic +1 < musics.length ? indexOfMusic +1 : 0;    
-            PlayMusic(musics[index].id);
+            if (!isInLoop) {
+                const index = musicId +1 < musics.length ? musicId +1 : 0;    
+                PlayMusic(musics[index].id);
+            } else {
+                audio.currentTime = 0;
+                audio.play();
+            }
         });
     
         playingMusicImage.setAttribute("src", "");
@@ -80,6 +86,8 @@ const RemoveAllAudio = () => {
 };
 
 const ChangePlayIcon = (pause, element) => {
+    if (element == null) return;
+
     const icon = element.querySelector("i");
 
     icon.classList.remove(pause ? "bx-play-circle" : "bx-pause-circle");
@@ -127,6 +135,7 @@ async function main() {
     const volumeInput = document.querySelector("#volume-input");
     const volumeIcon = document.querySelector("#volume-icon");
     const timeInput = document.querySelector("#time-input");
+    const musicLoop = document.querySelector("#music-loop");
 
     const musicURLInput = document.querySelector("#music-url");
     const backupBtn = document.querySelector("#backup");
@@ -213,6 +222,16 @@ async function main() {
         }
     });
 
+    musicLoop.addEventListener("click", () => {
+        isInLoop = !isInLoop;
+
+        if (isInLoop) {
+            musicLoop.classList.add("active");
+        } else {
+            musicLoop.classList.remove("active");
+        }
+    });
+
     window.api.receive("update-musics-list", (ev, newMusics) => {
         musics = newMusics;
         let html = ``;
@@ -247,6 +266,20 @@ async function main() {
                 document.querySelector(`[data-music-id="${playingMusicId}"]`)
             );
         }
+    });
+
+    window.api.receive("play-library", () => {  
+        PlayMusic(0);
+    });
+
+    window.api.receive("restart-music", () => {
+        if (playingMusicId != null) {
+            PlayMusic(playingMusicId);
+        }
+    });
+
+    window.api.receive("set-music-loop", (ev, loop) => {
+        isInLoop = loop;
     });
 
     window.addEventListener("keydown", (ev) => {

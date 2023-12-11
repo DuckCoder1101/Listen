@@ -10,13 +10,17 @@ const sendChanels = [
     "(modal)-alter-music",
     "backup",
     "delete-music",
-    "alter-music"
+    "alter-music",
+    "show-dialog"
 ];
 const receiveChannels = [
     "add-music-error",
     "update-musics-list",
     "(modal)-musics",
-    "pause-music"
+    "pause-music",
+    "play-library",
+    "restart-music",
+    "set-music-loop"
 ];
 electron_1.contextBridge.exposeInMainWorld("api", {
     send: (channel, arg) => {

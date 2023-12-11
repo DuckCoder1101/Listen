@@ -54,7 +54,15 @@ async function main() {
         const name = document.querySelector("#music-name").value;
         const author = document.querySelector("#music-author").value;
 
-        if (!name || !author) return;
+        const nameMatch = name.match(/["']/g);
+        const authorMatch = author.match(/["']/g);
+
+        if (!name || !author || nameMatch != null || authorMatch != null) {
+            return window.api.send("show-dialog", {
+                type: "error",
+                message: "Nome ou autor inválidos!"
+            });
+        }
 
         musics[currentMusic].name = name;
         musics[currentMusic].author = author;
