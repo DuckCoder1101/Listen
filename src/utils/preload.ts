@@ -5,22 +5,25 @@ const sendChanels: string[] = [
     "add-music-from-url",
     "play-music",
     "pause-music",
-    "(modal)-create-musics",
-    "(modal)-alter-music",
+    "(musics-modal)-create-musics",
+    "(musics-modal)-alter-music",
     "backup",
     "delete-music",
     "alter-music",
-    "show-dialog"
+    "show-dialog",
+    "open-options-modal",
+    "(options-modal)-save-options"
 ];
 
 const receiveChannels: string[] = [
     "add-music-error",
     "update-musics-list",
-    "(modal)-musics",
+    "(musics-modal)-musics",
     "pause-music",
     "play-library",
     "restart-music",
-    "set-music-loop"
+    "set-music-loop",
+    "(options-modal)-options-list"
 ];
 
 contextBridge.exposeInMainWorld("api", {

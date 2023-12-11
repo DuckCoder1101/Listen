@@ -23,15 +23,22 @@
 
         <div class="d-flex flex-column justify-content-between w-25" style="background-color: #313336;">
             <form class="mt-3 px-3" action="#" onsubmit="return false">
+                <div>
+                    <button id="open-options" class="badge bg-transparent rounded border-0">
+                        <i class='bx bx-cog fs-4' ></i>
+                    </button>
+                </div>
+                
                 <h1 class="text-center text-light mb-2">ToListen</h1>
+
                 <div class="mb-1">
                     <input class="form-control" id="music-url" type="text" name="musicURL" placeholder="Digite o URL da música" />
                 </div>
             
-                <div class="w-100 d-flex align-items-center justify-content-center">
-                    <button class="btn btn-primary mx-1" id="add-music-from-url"><i class='bx bx-cloud-download'></i></button>
-                    <button class="btn btn-secondary mx-1" id="add-musics-from-files"><i class='bx bx-file-find' ></i></button>
-                    <button class="btn btn-success mx-1" id="backup"><i class='bx bx-save'></i></button>
+                <div class="d-flex align-items-center justify-content-center">
+                    <button class="btn btn-primary mx-1 p-1" id="add-music-from-url"><i class='bx bx-cloud-download fs-4'></i></button>
+                    <button class="btn btn-secondary mx-1 p-1" id="add-musics-from-files"><i class='bx bx-file-find fs-4'></i></button>
+                    <button class="btn btn-success mx-1 p-1" id="backup"><i class='bx bx-save fs-4'></i></button>
                 </div>
             </form>
 
@@ -42,18 +49,18 @@
                 <form class="d-flex align-items-center flex-wrap" onsubmit="return false">
                     <div class="d-flex flex-column justify-content-center">
                         <div>
-                            <span class="badge d-inline "><i id="volume-icon" class='bx bx-volume-full'></i></span>
+                            <span class="badge d-inline "><i id="volume-icon" class='bx bx-volume-full fs-6'></i></span>
                             <input id="volume-input" class="d-inline" type="range" min="0" max="1" step=".05" value="1" name="volume" />
                         </div>
                         <div>
-                            <span class="badge d-inline"><i class='bx bx-time' ></i></span>
+                            <span class="badge d-inline"><i class='bx bx-time fs-6'></i></span>
                             <input id="time-input" class="d-inline" type="range" min="0" max="0" step="1" value="0" name="time" disabled />
                         </div>
                     </div>
 
                     <div>
                         <button type="button" id="music-loop" class="badge bg-transparent rounded-circle border-0">
-                            <i class='bx bx-repost'></i>
+                            <i class='bx bx-repost fs-5'></i>
                         </button>
                     </div>
                 </form>

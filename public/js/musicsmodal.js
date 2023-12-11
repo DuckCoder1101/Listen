@@ -27,7 +27,7 @@ async function main() {
         `;
     }
 
-    window.api.receive("(modal)-musics", (ev, info) => {
+    window.api.receive("(musics-modal)-musics", (ev, info) => {
         isFromDownload = info.isFromDownload;
         isAChange = info.isAChange;
 

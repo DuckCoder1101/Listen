@@ -10,3 +10,9 @@ export type ModalCreateMusicResponse = {
     isAChange: boolean;
     musics: Music[];
 };
+
+export type AppOption = {
+    id: number;
+    description: string;
+    value: boolean;
+}

@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const fs_1 = require("fs");
 const path_1 = require("path");
-const database_1 = require("./database");
+const options_1 = require("./options");
+const library_1 = require("./library");
 const downloader_1 = __importDefault(require("./downloader"));
 const isValidUrl = (urlString) => {
     var urlPattern = new RegExp('^(https?:\\/\\/)?' +
@@ -26,7 +27,7 @@ const isValidUrl = (urlString) => {
         '(\\#[-a-z\\d_]*)?$', 'i');
     return urlPattern.test(urlString);
 };
-const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => __awaiter(void 0, void 0, void 0, function* () {
+const OpenMusicsModal = (defaultInfo, isFromDownload = false, isAChange = false) => __awaiter(void 0, void 0, void 0, function* () {
     const modalWindow = new electron_1.BrowserWindow({
         title: "Adicionar músicias",
         width: 500, height: 400,
@@ -41,8 +42,8 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
             preload: (0, path_1.join)(__dirname, "./preload.js")
         }
     });
-    yield modalWindow.loadFile((0, path_1.join)(__dirname, "../../public/html/modal.html"));
-    modalWindow.webContents.send("(modal)-musics", { defaultInfo, isFromDownload, isAChange });
+    yield modalWindow.loadFile((0, path_1.join)(__dirname, "../../public/html/musicsmodal.html"));
+    modalWindow.webContents.send("(musics-modal)-musics", { defaultInfo, isFromDownload, isAChange });
     modalWindow.on("close", (ev) => {
         ev.preventDefault();
         const res = electron_1.dialog.showMessageBoxSync(modalWindow, {
@@ -57,6 +58,23 @@ const CreateModal = (defaultInfo, isFromDownload = false, isAChange = false) => 
         }
     });
 });
+const OpenOptionsModal = () => __awaiter(void 0, void 0, void 0, function* () {
+    const modalWindow = new electron_1.BrowserWindow({
+        title: "Configurações",
+        width: 500, height: 400,
+        center: true, modal: true,
+        autoHideMenuBar: true, resizable: false,
+        icon: (0, path_1.join)(__dirname, "../public/icons/icon.png"),
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            sandbox: true,
+            preload: (0, path_1.join)(__dirname, "./preload.js")
+        }
+    });
+    yield modalWindow.loadFile((0, path_1.join)(__dirname, "../../public/html/optionsmodal.html"));
+    modalWindow.webContents.send("(options-modal)-options-list", yield (0, options_1.GetAppOptions)());
+});
 function StartEvents(mainWindow) {
     electron_1.ipcMain.on("add-music-from-url", (ev, url) => {
         if (!url || !isValidUrl(url)) {
@@ -67,7 +85,7 @@ function StartEvents(mainWindow) {
             });
         }
         else {
-            CreateModal([{ id: -1, name: "", author: "", path: url }], true);
+            OpenMusicsModal([{ id: -1, name: "", author: "", path: url }], true);
         }
     });
     electron_1.ipcMain.on("add-musics-from-files", () => __awaiter(this, void 0, void 0, function* () {
@@ -90,11 +108,11 @@ function StartEvents(mainWindow) {
                 author: "",
                 path
             }));
-            CreateModal(musics);
+            OpenMusicsModal(musics);
         }
     }));
-    electron_1.ipcMain.on("(modal)-create-musics", (ev, info) => __awaiter(this, void 0, void 0, function* () {
-        const databaseMusics = yield (0, database_1.ReadDatabase)();
+    electron_1.ipcMain.on("(musics-modal)-create-musics", (ev, info) => __awaiter(this, void 0, void 0, function* () {
+        const databaseMusics = yield (0, library_1.GetLibrary)();
         let allMusics = databaseMusics;
         info.musics.forEach((music) => {
             music.name = music.name.replace(/["']/g, "");
@@ -111,24 +129,24 @@ function StartEvents(mainWindow) {
                 return ev.sender.close();
             allMusics.find(music => music == info.musics[0]).path = path;
         }
-        (0, database_1.UpdateDatabase)(allMusics);
+        (0, library_1.SetLibrary)(allMusics);
         ev.sender.close();
         mainWindow.webContents.send("update-musics-list", allMusics);
     }));
-    electron_1.ipcMain.on("(modal)-alter-music", (ev, { id, name, author, path }) => __awaiter(this, void 0, void 0, function* () {
-        let allMusics = yield (0, database_1.ReadDatabase)();
+    electron_1.ipcMain.on("(musics-modal)-alter-music", (ev, { id, name, author, path }) => __awaiter(this, void 0, void 0, function* () {
+        let allMusics = yield (0, library_1.GetLibrary)();
         name = name.replace(/["']/g, "");
         author = author.replace(/["']/g, "");
         if (allMusics[id] != undefined) {
             allMusics[id] = { id, name, author, path };
         }
-        (0, database_1.UpdateDatabase)(allMusics);
+        (0, library_1.SetLibrary)(allMusics);
         mainWindow.webContents.send("update-musics-list", allMusics);
         ev.sender.close();
     }));
     electron_1.ipcMain.on("backup", () => __awaiter(this, void 0, void 0, function* () {
         const path = (0, path_1.join)(electron_1.app.getPath("appData"), "/ToListen/library");
-        let musics = yield (0, database_1.ReadDatabase)();
+        let musics = yield (0, library_1.GetLibrary)();
         for (let music of musics) {
             if (!music.path.startsWith(path)) {
                 const newPath = (0, path_1.join)(path, `/${music.name}${(0, path_1.extname)(music.path)}`);
@@ -136,7 +154,7 @@ function StartEvents(mainWindow) {
                 music.path = newPath;
             }
         }
-        (0, database_1.UpdateDatabase)(musics);
+        (0, library_1.SetLibrary)(musics);
         mainWindow.webContents.send("update-musics-list", musics);
         electron_1.dialog.showMessageBoxSync(mainWindow, {
             title: "Backup concluído",
@@ -145,16 +163,16 @@ function StartEvents(mainWindow) {
         });
     }));
     electron_1.ipcMain.on("alter-music", (ev, musicId) => __awaiter(this, void 0, void 0, function* () {
-        const allMusics = yield (0, database_1.ReadDatabase)();
+        const allMusics = yield (0, library_1.GetLibrary)();
         const targetMusic = allMusics.find((music) => music.id == musicId);
-        CreateModal([targetMusic], false, true);
+        OpenMusicsModal([targetMusic], false, true);
     }));
     electron_1.ipcMain.on("delete-music", (ev, musicId) => __awaiter(this, void 0, void 0, function* () {
-        const allMusics = yield (0, database_1.ReadDatabase)();
+        const allMusics = yield (0, library_1.GetLibrary)();
         const targetMusic = allMusics.find((music) => music.id == musicId);
         const filteredMusics = allMusics.filter((music) => music.id != musicId);
         const path = (0, path_1.join)(electron_1.app.getPath("appData"), "/ToListen/library");
-        (0, database_1.UpdateDatabase)(filteredMusics);
+        (0, library_1.SetLibrary)(filteredMusics);
         mainWindow.webContents.send("update-musics-list", filteredMusics);
         if (targetMusic.path.startsWith(path)) {
             (0, fs_1.unlinkSync)(targetMusic.path);
@@ -166,5 +184,14 @@ function StartEvents(mainWindow) {
             message
         });
     });
+    electron_1.ipcMain.on("open-options-modal", (ev) => {
+        OpenOptionsModal();
+    });
+    electron_1.ipcMain.on("(options-modal)-save-options", (ev, newoptions) => __awaiter(this, void 0, void 0, function* () {
+        let options = yield (0, options_1.GetAppOptions)();
+        newoptions.forEach(({ id, value }) => options[id].value = value);
+        (0, options_1.SetAppOptions)(options);
+        ev.sender.close();
+    }));
 }
 exports.default = StartEvents;

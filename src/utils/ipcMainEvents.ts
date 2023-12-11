@@ -3,7 +3,8 @@ import { copyFileSync, unlinkSync } from "fs";
 import { join, extname } from "path";
 
 import { ModalCreateMusicResponse, Music } from "./types";
-import { ReadDatabase, UpdateDatabase } from "./database";
+import { GetAppOptions, SetAppOptions } from "./options";
+import { GetLibrary, SetLibrary } from "./library";
 import Download from "./downloader";
 
 const isValidUrl = (urlString: string) => {
@@ -17,7 +18,7 @@ const isValidUrl = (urlString: string) => {
     return urlPattern.test(urlString);
 };
 
-const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChange = false) => {
+const OpenMusicsModal = async (defaultInfo: Music[], isFromDownload = false, isAChange = false) => {
     const modalWindow = new BrowserWindow({
         title: "Adicionar músicias",
         width: 500, height: 400,
@@ -33,8 +34,8 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
         }
     });
 
-    await modalWindow.loadFile(join(__dirname, "../../public/html/modal.html"));
-    modalWindow.webContents.send("(modal)-musics", { defaultInfo, isFromDownload, isAChange });
+    await modalWindow.loadFile(join(__dirname, "../../public/html/musicsmodal.html"));
+    modalWindow.webContents.send("(musics-modal)-musics", { defaultInfo, isFromDownload, isAChange });
 
     modalWindow.on("close", (ev) => {
         ev.preventDefault();
@@ -52,6 +53,25 @@ const CreateModal = async (defaultInfo: Music[], isFromDownload = false, isAChan
     });
 };
 
+const OpenOptionsModal = async () => {
+    const modalWindow = new BrowserWindow({
+        title: "Configurações",
+        width: 500, height: 400,
+        center: true, modal: true,
+        autoHideMenuBar: true, resizable: false,
+        icon: join(__dirname, "../public/icons/icon.png"),
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            sandbox: true,
+            preload: join(__dirname, "./preload.js")
+        }
+    });
+
+    await modalWindow.loadFile(join(__dirname, "../../public/html/optionsmodal.html"));
+    modalWindow.webContents.send("(options-modal)-options-list", await GetAppOptions());
+};
+
 export default function StartEvents(mainWindow: BrowserWindow) {
     ipcMain.on("add-music-from-url", (ev, url: string) => {
         if (!url || !isValidUrl(url)) {
@@ -61,7 +81,7 @@ export default function StartEvents(mainWindow: BrowserWindow) {
                 type: "error"
             });
         } else {
-            CreateModal([ { id: -1, name: "", author: "", path: url } ], true);
+            OpenMusicsModal([ { id: -1, name: "", author: "", path: url } ], true);
         }
     });
 
@@ -87,12 +107,12 @@ export default function StartEvents(mainWindow: BrowserWindow) {
                 path
             }));
 
-            CreateModal(musics);
+            OpenMusicsModal(musics);
         } 
     });
 
-    ipcMain.on("(modal)-create-musics", async (ev, info: ModalCreateMusicResponse) => {
-        const databaseMusics = await ReadDatabase();
+    ipcMain.on("(musics-modal)-create-musics", async (ev, info: ModalCreateMusicResponse) => {
+        const databaseMusics = await GetLibrary();
         let allMusics = databaseMusics;
 
         info.musics.forEach((music) => {
@@ -114,14 +134,14 @@ export default function StartEvents(mainWindow: BrowserWindow) {
             (allMusics.find(music => music == info.musics[0]) as Music).path = path;
         }
 
-        UpdateDatabase(allMusics);
+        SetLibrary(allMusics);
         ev.sender.close();
 
         mainWindow.webContents.send("update-musics-list", allMusics);
     });
 
-    ipcMain.on("(modal)-alter-music", async (ev, { id, name, author, path }: Music) => {
-        let allMusics = await ReadDatabase();
+    ipcMain.on("(musics-modal)-alter-music", async (ev, { id, name, author, path }: Music) => {
+        let allMusics = await GetLibrary();
 
         name = name.replace(/["']/g, "");
         author = author.replace(/["']/g, "");
@@ -130,7 +150,7 @@ export default function StartEvents(mainWindow: BrowserWindow) {
             allMusics[id] = { id, name, author, path };
         }
 
-        UpdateDatabase(allMusics);
+        SetLibrary(allMusics);
 
         mainWindow.webContents.send("update-musics-list", allMusics);
         ev.sender.close();
@@ -138,7 +158,7 @@ export default function StartEvents(mainWindow: BrowserWindow) {
 
     ipcMain.on("backup", async () => {
         const path = join(app.getPath("appData"), "/ToListen/library");
-        let musics = await ReadDatabase();
+        let musics = await GetLibrary();
 
         for (let music of musics) {
             if (!music.path.startsWith(path)) {
@@ -149,7 +169,7 @@ export default function StartEvents(mainWindow: BrowserWindow) {
             }
         }
 
-        UpdateDatabase(musics);
+        SetLibrary(musics);
         mainWindow.webContents.send("update-musics-list", musics);
 
         dialog.showMessageBoxSync(mainWindow,  {
@@ -160,20 +180,20 @@ export default function StartEvents(mainWindow: BrowserWindow) {
     });
 
     ipcMain.on("alter-music", async (ev, musicId: number) => {
-        const allMusics = await ReadDatabase();
+        const allMusics = await GetLibrary();
         const targetMusic = allMusics.find((music) => music.id == musicId) as Music;
 
-        CreateModal([ targetMusic ], false, true);
+        OpenMusicsModal([ targetMusic ], false, true);
     });
 
     ipcMain.on("delete-music", async (ev, musicId: number) => {
-        const allMusics = await ReadDatabase();
+        const allMusics = await GetLibrary();
         const targetMusic = allMusics.find((music) => music.id == musicId) as Music;
         const filteredMusics = allMusics.filter((music) => music.id != musicId);
 
         const path = join(app.getPath("appData"), "/ToListen/library");
 
-        UpdateDatabase(filteredMusics);
+        SetLibrary(filteredMusics);
         mainWindow.webContents.send("update-musics-list", filteredMusics);
 
         if (targetMusic.path.startsWith(path)) {
@@ -186,5 +206,18 @@ export default function StartEvents(mainWindow: BrowserWindow) {
             type,
             message
         });
+    });
+
+    ipcMain.on("open-options-modal", (ev) => {
+        OpenOptionsModal();
+    });
+
+    ipcMain.on("(options-modal)-save-options", async (ev, newoptions: Array<{ id: number, value: boolean }>) => {
+        let options = await GetAppOptions();
+
+        newoptions.forEach(({ id, value }) => options[id].value = value);
+        SetAppOptions(options);
+        
+        ev.sender.close();
     });
 }

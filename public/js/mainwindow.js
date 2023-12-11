@@ -137,6 +137,7 @@ async function main() {
     const timeInput = document.querySelector("#time-input");
     const musicLoop = document.querySelector("#music-loop");
 
+    const openOptionsBtn = document.querySelector("#open-options");
     const musicURLInput = document.querySelector("#music-url");
     const backupBtn = document.querySelector("#backup");
     
@@ -230,6 +231,10 @@ async function main() {
         } else {
             musicLoop.classList.remove("active");
         }
+    });
+
+    openOptionsBtn.addEventListener("click", () => {
+        window.api.send("open-options-modal");
     });
 
     window.api.receive("update-musics-list", (ev, newMusics) => {

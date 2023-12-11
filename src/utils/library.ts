@@ -9,7 +9,7 @@ const appDataPath = join(app.getPath("appData"), "/ToListen");
 const databasePath = join(appDataPath, "/database.json");
 const libraryPath = join(appDataPath, "/library");
 
-export async function ReadDatabase(): Promise<Music[]> {
+export async function GetLibrary(): Promise<Music[]> {
     try {
         if (!existsSync(databasePath)) {
             if (!existsSync(appDataPath)) {
@@ -23,17 +23,17 @@ export async function ReadDatabase(): Promise<Music[]> {
             mkdirSync(libraryPath);
         }
         
-        const rawFile = readFileSync(databasePath, { encoding: "utf-8" });
-        const json = await JSON.parse(rawFile);
+        const json = readFileSync(databasePath, { encoding: "utf-8" });
+        const { data } = await JSON.parse(json);
 
-        return json.data;
+        return data;
     } catch (err) {
         if (isDev) console.log(err);
         return [];
     }
 }
 
-export function UpdateDatabase(data: Music[]): boolean {
+export function SetLibrary(data: Music[]): boolean {
     try {
         const json = JSON.stringify({ data });
         writeFileSync(databasePath, json, {

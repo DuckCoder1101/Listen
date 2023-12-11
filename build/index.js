@@ -17,7 +17,8 @@ const electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 const fs_1 = require("fs");
 const electron_log_1 = __importDefault(require("electron-log"));
 const path_1 = require("path");
-const database_1 = require("./utils/database");
+const library_1 = require("./utils/library");
+const options_1 = require("./utils/options");
 const ipcMainEvents_1 = __importDefault(require("./utils/ipcMainEvents"));
 const updater_1 = __importDefault(require("./utils/updater"));
 const tray_1 = __importDefault(require("./utils/tray"));
@@ -40,15 +41,15 @@ function main() {
                 devTools: electron_is_dev_1.default
             }
         });
-        const musics = yield (0, database_1.ReadDatabase)();
+        const musics = yield (0, library_1.GetLibrary)();
         const filteredMusics = musics.filter((music) => (0, fs_1.existsSync)(music.path));
         if (musics.length != filteredMusics.length) {
             electron_1.dialog.showMessageBoxSync(mainWindow, {
                 title: "Músicas não encontradas!",
                 message: "Algumas músicas foram excluídas por seus arquivos não existirem mais! \n Para evitar isso faça o backup da biblioteca.",
-                type: "error"
+                type: "warning"
             });
-            (0, database_1.UpdateDatabase)(filteredMusics);
+            (0, library_1.SetLibrary)(filteredMusics);
         }
         yield mainWindow.loadFile((0, path_1.join)(__dirname, "../public/html/mainwindow.html"));
         mainWindow.webContents.send("update-musics-list", filteredMusics);
@@ -56,16 +57,21 @@ function main() {
         mainWindow.maximize();
         (0, tray_1.default)(mainWindow);
         (0, ipcMainEvents_1.default)(mainWindow);
-        mainWindow.on("close", (ev) => {
-            ev.preventDefault();
-            mainWindow.hide();
-            new electron_1.Notification({
-                title: `ToListen ainda está em execução!`,
-                body: "🎵 Tocando em 2° plano",
-                silent: true,
-                urgency: "low"
-            }).show();
-        });
+        mainWindow.on("close", (ev) => __awaiter(this, void 0, void 0, function* () {
+            const options = yield (0, options_1.GetAppOptions)();
+            if (options[0].value) {
+                ev.preventDefault();
+                mainWindow.hide();
+                if (options[1].value) {
+                    new electron_1.Notification({
+                        title: `ToListen ainda está em execução!`,
+                        body: "🎵 Tocando em 2° plano",
+                        silent: true,
+                        urgency: "low"
+                    }).show();
+                }
+            }
+        }));
         if (electron_is_dev_1.default) {
             mainWindow.webContents.openDevTools();
         }
