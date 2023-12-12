@@ -9,12 +9,10 @@ import { GetAppOptions } from "./utils/options";
 import StartEvents from "./utils/ipcMainEvents";
 import CheckForUpdates from "./utils/updater";
 import CreateTray from "./utils/tray";
-import { AppOption } from "./utils/types";
 
 async function main() {
     app.setName("ToListen");
     app.setAppUserModelId("ToListen");
-
     log.initialize({ preload: false });
 
     const mainWindow = new BrowserWindow({
@@ -46,7 +44,6 @@ async function main() {
     }
 
     await mainWindow.loadFile(join(__dirname, "../public/html/mainwindow.html"));
-    
     mainWindow.webContents.send("update-musics-list", filteredMusics);
 
     mainWindow.setOpacity(1);

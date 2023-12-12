@@ -75,9 +75,9 @@ async function main() {
             previousMusicBtn.setAttribute("disabled", false);
         } else {
             if (isAChange) {
-                window.api.send("(modal)-alter-music", musics[0])
+                window.api.send("(musics-modal)-alter-music", musics[0])
             } else {
-                window.api.send("(modal)-create-musics", {
+                window.api.send("(musics-modal)-create-musics", {
                     musics,
                     isFromDownload
                 });
