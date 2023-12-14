@@ -1,6 +1,6 @@
 {
   "name": "tolisten",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A free and open source music player to you!",
   "main": "build/index.js",
   "scripts": {

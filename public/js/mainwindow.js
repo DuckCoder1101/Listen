@@ -211,6 +211,10 @@ async function main() {
 
     deleteMusic.addEventListener("click", () => {
         if (menuMusicId != null) {
+            if (playingMusicId == menuMusicId) {
+                PauseMusic();
+            }
+
             window.api.send("delete-music", menuMusicId);
             HideOptions();
         }
