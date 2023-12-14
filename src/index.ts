@@ -1,3 +1,5 @@
+// Code by DuckCoder1101
+
 import { app, BrowserWindow, dialog, Notification } from "electron";
 import isDev from "electron-is-dev";
 import { existsSync } from "fs";

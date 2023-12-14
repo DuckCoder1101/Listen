@@ -3,7 +3,7 @@
 
 # [Download ToListen](https://github.com/DuckCoder1101/ToListen/releases)
 
-# English:
+# :us: English:
 ToListen is a **FREE and OPEN SOURCE** musics player. 
 With ToListen you can organize your musics in just one library and enjoy listening your musics while you do other things in your PC.
 
@@ -14,7 +14,7 @@ In Windows, the System probaly will show a warn box, you may confirm the install
 # Support
 Any problem or ask, you can contact me [here](https://github.com/DuckCoder1101/ToListen/issues).
 
-# Português:
+# :brazil: Português:
 ToListen é um reprodutor de música **GRATUITO e de CÓDIGO ABERTO**.
 Com ToListen você pode organizar suas músicas em apenas uma biblioteca e se divertir ouvindo suas músicas favoritas enquanto faz outras coisas em seu PC.
 

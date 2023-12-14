@@ -9,6 +9,7 @@ builder.build({
         productName: "ToListen",
         executableName: "ToListen",
         appId: "ToListen",
+        artifactName: "ToListen-Setup-${buildVersion}.${ext}",
 
         directories: {
             output: "dist/",
@@ -27,13 +28,21 @@ builder.build({
             createDesktopShortcut: true,
             createStartMenuShortcut: true,
             deleteAppDataOnUninstall: true,
-            artifactName: "ToListen-Setup-${buildVersion}.${ext}",
             shortcutName: "ToListen",
             installerIcon: "public/icons/icon.ico",
             installerHeaderIcon: "public/icons/icon.ico",
             language: "0x0416",
             uninstallerIcon: "public/icons/icon.ico",
             uninstallDisplayName: "ToListen"
+        },
+
+        mac: {
+            target: "pkg",
+                        
+        },
+        pkg: {
+            allowCurrentUserHome: true,
+            allowRootDirectory: false
         }
-    }
+    },
 });
