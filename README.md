@@ -1,5 +1,5 @@
 # Listen
-<img src="https://github.com/DuckCoder1101/ToListen/blob/main/public/icons/icon.png?raw=true" width="350" height="350" alt="icon">
+<img src="https://github.com/DuckCoder1101/ToListen/blob/main/public/icons/icon.png?raw=true" width="100" height="100" alt="icon" align="center">
 
 # [Download ToListen](https://github.com/DuckCoder1101/ToListen/releases)
 
